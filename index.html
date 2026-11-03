@@ -78,6 +78,13 @@ input:focus{border-color:var(--lime);box-shadow:0 0 0 4px rgba(196,245,66,.14)}
 .ok svg{width:78px;height:78px}.ok circle,.ok path{fill:none;stroke:var(--lime);stroke-linecap:round;stroke-linejoin:round}.ok circle{stroke-width:3;stroke-dasharray:166;stroke-dashoffset:166;animation:dr .6s forwards}.ok path{stroke-width:5;stroke-dasharray:50;stroke-dashoffset:50;animation:dr .4s .5s forwards}@keyframes dr{to{stroke-dashoffset:0}}
 .ok h3{justify-content:center;margin:10px 0 2px}.ok p{margin:0;color:var(--mu)}
 .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,90px);background:var(--red);color:#fff;padding:11px 18px;border-radius:30px;font-weight:700;opacity:0;transition:.4s;z-index:40;max-width:90%;text-align:center}.toast.on{transform:translate(-50%,0);opacity:1}
+.ld{position:relative;height:104px;border-radius:18px;overflow:hidden;background:#07110c;border:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;padding:0 20px;box-shadow:inset 0 0 40px rgba(0,0,0,.5)}
+.ld canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.lt{position:relative;z-index:1;min-width:0;text-shadow:0 1px 10px rgba(0,0,0,.7)}.lt b{display:block;font-size:14px;letter-spacing:.6px;font-weight:800}.lt small{display:block;font-size:9px;letter-spacing:2px;color:#9fb8aa;margin-top:3px}
+.lp{position:relative;z-index:1;font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;text-shadow:0 1px 10px rgba(0,0,0,.8)}
+.logs{margin-top:10px;max-height:132px;overflow:auto;background:#050c08;border:1px solid var(--ln);border-radius:14px;padding:10px 12px;font:12px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#8fb09e}
+.logs div{animation:in .3s both;word-break:break-word}.logs i{font-style:normal;color:#4f6c5d;margin-right:8px}
+.logs .ok{color:var(--g)}.logs .warn{color:var(--lime)}.logs .err{color:var(--red)}
 @media(max-width:900px){.app{grid-template-columns:minmax(0,1fr);padding:10px}.side{position:static;flex-direction:row;align-items:center;overflow:auto}.nav{flex-direction:row;padding:6px}.nav button{white-space:nowrap;padding:9px 12px}.brand span{display:none}
 .main{grid-template-columns:minmax(0,1fr);grid-template-areas:"hd" "st" "up" "ch" "ps" "cm"}.st{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -103,7 +110,7 @@ input:focus{border-color:var(--lime);box-shadow:0 0 0 4px rgba(196,245,66,.14)}
       <div class="row"><input id="u" type="url" inputmode="url" placeholder="YouTube Short বা Video লিংক" autocomplete="off"><button class="btn gh" id="paste">Paste</button></div>
       <div class="prev" id="prev"><img id="pi" alt=""><div><p id="pt"></p><span class="tag" id="pg"></span></div></div>
       <button class="btn lime" id="go" disabled>Upload করুন</button>
-      <div class="steps" id="steps"><div class="stp" data-s="0"><i>✓</i>লিংক যাচাই</div><div class="stp" data-s="1"><i>✓</i>Title আনা হচ্ছে</div><div class="stp" data-s="2"><i>✓</i>MeBook এ পোস্ট হচ্ছে</div><div class="bar"><u id="pb"></u></div></div>
+      <div class="steps" id="steps"><div class="ld" id="ld"><canvas id="cv"></canvas><div class="lt"><b>SYNCING LIBRARY</b><small>PREPARING YOUR FILES</small></div><div class="lp" id="lp">0%</div></div><div class="logs" id="logs"></div></div>
     </section>
     <section class="card ps" id="ps"><h3>তোমার পোস্ট <span id="pc"></span></h3><div id="pl"><div class="empty">লোড হচ্ছে...</div></div></section>
     <section class="card cm" id="cm"><h3>সর্বশেষ Comment <span>Reply দাও</span></h3><div id="cl"><div class="empty">লোড হচ্ছে...</div></div></section>
@@ -145,17 +152,40 @@ async function onInput(){info=parse($("u").value);title="";const p=$("prev");
  const my=info.id;title=await getTitle(info);if(info&&info.id===my)$("pt").textContent=title||"(Title পাওয়া যায়নি)"}
 $("u").oninput=onInput;
 $("paste").onclick=async()=>{try{$("u").value=await navigator.clipboard.readText();onInput()}catch(e){toast("Paste হয়নি, হাতে বসাও")}};
-function step(n,p){document.querySelectorAll(".stp").forEach(s=>{const k=+s.dataset.s;s.className="stp"+(k<n?" ok":k===n?" now":"")});$("pb").style.width=p+"%"}
-$("go").onclick=async()=>{if(!info||busy)return;busy=true;const b=$("go");b.disabled=true;b.classList.add("busy");b.textContent="Upload হচ্ছে...";$("steps").classList.add("on");
- try{step(0,15);await sleep(450);step(1,45);if(!title)title=await getTitle(info);await sleep(300);step(2,75);
-  if(!auth.currentUser){try{await signInAnonymously(auth)}catch(e){}}
-  await addDoc(collection(db,"posts"),{authorId:ME,authorName:NAME,authorUsername:ME,username:ME,authorAvatar:PFP,isOfficial:false,verified:true,type:"youtube",caption:title,image:"",movie:"",
+/* ---- green streak loader ---- */
+const L={disp:0,tgt:0,run:false,raf:0,rows:[],w:0,h:0,d:1};
+function ldSetup(){const cv=$("cv"),r=cv.parentElement.getBoundingClientRect();L.d=Math.min(window.devicePixelRatio||1,2);L.w=r.width;L.h=r.height;cv.width=Math.round(r.width*L.d);cv.height=Math.round(r.height*L.d);
+ L.rows=Array.from({length:Math.floor(L.h/3.4)},()=>({v:Math.random(),t:Math.random(),a:.6+Math.random()*.4}))}
+function ldDraw(){const cv=$("cv"),c=cv.getContext("2d"),W=L.w,H=L.h;c.setTransform(L.d,0,0,L.d,0,0);c.clearRect(0,0,W,H);
+ const df=L.tgt-L.disp;L.disp=df>.05?L.disp+Math.max(df*.05,.2):L.tgt;
+ const p=L.disp/100,sp=Math.sqrt(Math.max(0,1-p))*.26*W,n=L.rows.length,rh=H/n;
+ L.rows.forEach((r,i)=>{if(Math.random()<.05)r.t=Math.random();r.v+=(r.t-r.v)*.18;
+  let len=p>=1?W:p*W+(r.v-.4)*sp;if(p<.02)len=3+r.v*10;len=Math.min(W,Math.max(2,len));
+  const g=c.createLinearGradient(0,0,len,0);g.addColorStop(0,"rgba(8,64,34,"+r.a+")");g.addColorStop(.55,"rgba(47,220,107,"+r.a+")");g.addColorStop(.9,"rgba(196,245,66,"+r.a+")");g.addColorStop(1,"rgba(240,255,200,"+r.a+")");
+  c.fillStyle=g;c.fillRect(0,i*rh,len,Math.max(1,rh-1))});
+ $("lp").textContent=Math.round(L.disp)+"%"}
+function ldLoop(){ldDraw();if(L.run)L.raf=requestAnimationFrame(ldLoop)}
+function ldStart(){L.disp=0;L.tgt=0;$("logs").innerHTML="";ldSetup();L.run=true;cancelAnimationFrame(L.raf);ldLoop()}
+function ldStop(){L.run=false;cancelAnimationFrame(L.raf)}
+function step(p){L.tgt=p}
+function reach(p){return new Promise(res=>{const c=()=>L.disp>=p-.01?res():setTimeout(c,30);c()})}
+function log(m,k){const l=$("logs"),d=document.createElement("div");if(k)d.className=k;d.innerHTML="<i>"+new Date().toTimeString().slice(0,8)+"</i>"+esc(m);l.appendChild(d);l.scrollTop=l.scrollHeight}
+$("go").onclick=async()=>{if(!info||busy)return;busy=true;const b=$("go");b.disabled=true;b.classList.add("busy");b.textContent="Upload হচ্ছে...";$("steps").classList.add("on");ldStart();
+ try{log("লিংক যাচাই করা হচ্ছে...");step(15);await reach(15);
+  log("লিংক ঠিক আছে → "+(info.short?"Short":"Video")+" ("+info.id+")","ok");
+  log("Title আনা হচ্ছে...");step(45);if(!title)title=await getTitle(info);await reach(45);
+  log(title?"Title পাওয়া গেছে: "+title:"Title পাওয়া যায়নি",title?"ok":"warn");
+  log("MeBook এ পোস্ট হচ্ছে...");step(75);
+  if(!auth.currentUser){log("Firebase এ কানেক্ট হচ্ছে...");try{await signInAnonymously(auth)}catch(e){}}
+  const ref=await addDoc(collection(db,"posts"),{authorId:ME,authorName:NAME,authorUsername:ME,username:ME,authorAvatar:PFP,isOfficial:false,verified:true,type:"youtube",caption:title,image:"",movie:"",
    youtube:{videoId:info.id,url:"https://www.youtube.com/"+(info.short?"shorts/":"watch?v=")+info.id,isShort:info.short,title},
    audience:"public",likes:[],reactions:{},comments:[],shares:0,createdAt:serverTimestamp()});
-  step(3,100);await sleep(300);const s=info.short;$("u").value="";info=null;$("prev").classList.remove("on");
+  log("পোস্ট তৈরি হয়েছে (#"+ref.id.slice(0,6)+")","ok");
+  step(100);await reach(100);log("Upload সম্পন্ন — 100%","ok");await sleep(600);
+  const s=info.short;$("u").value="";info=null;$("prev").classList.remove("on");
   await success("Upload হয়েছে!",(s?"Short":"Video")+" Home আর Shorts এ দেখা যাবে");
- }catch(e){console.error(e);toast(/permission/i.test(e.message)?"Firestore rules এ লেখার অনুমতি নেই":"Upload হয়নি: "+e.message)}
- $("steps").classList.remove("on");b.classList.remove("busy");b.textContent="Upload করুন";b.disabled=true;busy=false};
+ }catch(e){console.error(e);log("ব্যর্থ: "+e.message,"err");toast(/permission/i.test(e.message)?"Firestore rules এ লেখার অনুমতি নেই":"Upload হয়নি: "+e.message);await sleep(2200)}
+ ldStop();$("steps").classList.remove("on");b.classList.remove("busy");b.textContent="Upload করুন";b.disabled=true;busy=false};
 /* ---- chart ---- */
 function chart(){const ps=[...posts].reverse().slice(-12),n=ps.length,w=$("cw");
  if(n<2){w.innerHTML='<div class="empty" style="padding-top:90px">অন্তত ২টা পোস্ট হলে chart দেখাবে</div>';return}
