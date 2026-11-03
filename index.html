@@ -118,6 +118,11 @@ mark{background:rgba(196,245,66,.28);color:var(--lime);border-radius:4px;padding
 @media(max-width:900px){.app{grid-template-columns:minmax(0,1fr);padding:10px}.side{position:static;flex-direction:row;align-items:center;overflow:auto}.nav{flex-direction:row;padding:6px}.nav button{white-space:nowrap;padding:9px 12px}.brand span{display:none}
 .main{grid-template-columns:minmax(0,1fr);grid-template-areas:"hd" "sl" "st" "up" "ch" "ps" "cm"}.st{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.fw{margin-top:12px;border-top:1px solid var(--ln);padding-top:12px}
+.fw .fwh{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.fw .fwh span{color:var(--mu);font-size:12px}
+.fw .fwp{display:block;margin-top:8px;color:var(--lime);font-weight:700;font-size:12px}
+.fw .fwn{display:block;margin-top:4px;color:var(--mu);font-size:11px}
 </style>
 </head>
 <body>
@@ -137,6 +142,12 @@ mark{background:rgba(196,245,66,.28);color:var(--lime);border-radius:4px;padding
         <input id="cl2" type="url" inputmode="url" placeholder="Postimage logo লিংক (i.postimg.cc/... direct link)" autocomplete="off">
         <div class="pv"><img class="av" id="cpv" alt=""><span>Logo preview</span></div>
         <div class="row"><button class="btn lime" id="csv">Save করো</button><button class="btn gh" id="ccx">বাতিল</button></div>
+      </div>
+      <div class="fw" id="fw">
+        <div class="fwh"><b>👥 Followers count</b><span id="fwr">Real: 0</span></div>
+        <div class="row"><input id="fwi" type="text" inputmode="text" placeholder="Base count (যেমন 1500, 1.5k, 2M)" autocomplete="off"><button class="btn gh" id="fws">Save</button></div>
+        <span class="fwp" id="fwp"></span>
+        <small class="fwn">Base + real follow = user দের কাছে যা দেখাবে (1000+ হলে 1.5k, 1M+ হলে 1.2M)</small>
       </div>
     </section>
     <section class="st">
@@ -177,7 +188,7 @@ mark{background:rgba(196,245,66,.28);color:var(--lime);border-radius:4px;padding
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {getAuth,signInAnonymously} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import {getFirestore,collection,addDoc,deleteDoc,updateDoc,setDoc,getDoc,doc,query,orderBy,limit,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {getFirestore,collection,addDoc,deleteDoc,updateDoc,setDoc,getDoc,doc,query,orderBy,limit,onSnapshot,serverTimestamp,where} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 const app=initializeApp({apiKey:"AIzaSyBtBaUSIlXwJDWytaiOfal3ha7OmZEwuYM",authDomain:"mvbdminiapp.firebaseapp.com",projectId:"mvbdminiapp",storageBucket:"mvbdminiapp.firebasestorage.app",messagingSenderId:"668051748254",appId:"1:668051748254:web:d4804b68429d853a0c928f"});
 const auth=getAuth(app),db=getFirestore(app);
 const ME="mvbdstudio",NAME="MVBD STUDIO",PFP="https://i.postimg.cc/cJdK6tP8/IMG-20261101-130001-871.jpg";
@@ -204,7 +215,7 @@ function drawCh(){const c=curCh();
   e.onclick=ev=>{if(ev.target.closest(".dx"))return;selId=x.id;drawCh();closeSel()};
   const d=e.querySelector(".dx");if(d)d.onclick=async()=>{if(!confirm("\""+x.name+"\" channel টা মুছে ফেলবে? (আগের পোস্টগুলো থাকবে)"))return;try{await deleteDoc(doc(db,"channels",x.id));try{await deleteDoc(doc(db,"users",x.id))}catch(e){}if(selId===x.id)selId="mvbd";drawCh()}catch(e){toast("মোছা যায়নি")}};
   l.appendChild(e)});
- const a=document.createElement("div");a.className="so add";a.innerHTML="<span>➕</span><b>নতুন Channel যোগ করো</b>";a.onclick=()=>{closeSel();openAdd()};l.appendChild(a)}
+ const a=document.createElement("div");a.className="so add";a.innerHTML="<span>➕</span><b>নতুন Channel যোগ করো</b>";a.onclick=()=>{closeSel();openAdd()};l.appendChild(a);watchFw()}
 function closeSel(){$("sll").classList.remove("on");$("selb").classList.remove("on")}
 function openAdd(){$("adc").classList.add("on");$("cn").value="";$("cl2").value="";$("cpv").src=fb("?");$("cn").focus()}
 $("selb").onclick=()=>{$("adc").classList.remove("on");const o=$("sll").classList.toggle("on");$("selb").classList.toggle("on",o)};
@@ -225,6 +236,24 @@ $("csv").onclick=async()=>{const n=$("cn").value.trim(),u=$("cl2").value.trim(),
   else await success("Channel যোগ হয়েছে!",n)
  }catch(e){console.error(e);toast(/permission/i.test(e.message)?"Firestore rules এ channels এ লেখার অনুমতি নেই":"Save হয়নি: "+e.message)}
  b.disabled=false;b.textContent="Save করো"};
+/* ---- followers count ---- */
+const uidOf=c=>c.def?ME:c.id;
+const FWF=n=>{n=Math.max(0,Math.floor(Number(n)||0));if(n<1000)return String(n);for(const[d,x]of[[1e9,"B"],[1e6,"M"],[1e3,"k"]]){if(n>=d){return String(Math.floor(n/d*10)/10).replace(/\.0$/,"")+x}}return String(n)};
+const parseCnt=t=>{t=String(t||"").trim().toLowerCase().replace(/,/g,"");if(!t)return 0;const m=t.match(/^(\d+(?:\.\d+)?)\s*([kmb])?$/);if(!m)return NaN;return Math.floor(parseFloat(m[1])*({k:1e3,m:1e6,b:1e9}[m[2]]||1))};
+let fwBase=0,fwReal=0,fwU1=null,fwU2=null,fwFor="";
+function fwShow(){const v=parseCnt($("fwi").value);const b=isNaN(v)?fwBase:v;$("fwr").textContent="Real followers: "+fwReal;$("fwp").textContent="User দের কাছে দেখাবে: "+FWF(b+fwReal)+" ("+(b+fwReal)+")"}
+function watchFw(){const id=uidOf(curCh());if(fwFor===id)return;fwFor=id;if(fwU1)fwU1();if(fwU2)fwU2();fwBase=0;fwReal=0;$("fwi").value="";fwShow();
+ fwU1=onSnapshot(doc(db,"users",id),s=>{const d=s.data()||{};fwBase=Number(d.followersBase)||0;if(document.activeElement!==$("fwi"))$("fwi").value=fwBase||"";fwShow()},()=>{});
+ fwU2=onSnapshot(query(collection(db,"follows"),where("channel","==",id)),s=>{fwReal=s.size;fwShow()},()=>{})}
+$("fwi").oninput=fwShow;
+$("fws").onclick=async()=>{const v=parseCnt($("fwi").value);if(isNaN(v)){toast("সংখ্যা ঠিকমতো দাও (যেমন 1500, 1.5k, 2M)");return}
+ const c=curCh(),id=uidOf(c),b=$("fws");b.disabled=true;
+ try{if(!auth.currentUser){try{await signInAnonymously(auth)}catch(e){}}
+  await setDoc(doc(db,"users",id),{followersBase:v},{merge:true});
+  if(!c.def){try{await setDoc(doc(db,"channels",id),{followersBase:v},{merge:true})}catch(e){}}
+  await success("Followers সেট হয়েছে!",c.name+" • "+FWF(v+fwReal))
+ }catch(e){console.error(e);toast(/permission/i.test(e.message)?"Firestore rules এ users এ লেখার অনুমতি নেই":"Save হয়নি: "+e.message)}
+ b.disabled=false};
 drawCh();
 function toast(m){const t=$("toast");t.textContent=m;t.className="toast on";clearTimeout(toast.t);toast.t=setTimeout(()=>t.className="toast",3200)}
 async function success(t,m){$("okt").textContent=t;$("okm").textContent=m;const o=$("ok");o.classList.remove("on");void o.offsetWidth;o.classList.add("on");await sleep(1800);o.classList.remove("on")}
