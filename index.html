@@ -100,6 +100,15 @@ input:focus{border-color:var(--lime);box-shadow:0 0 0 4px rgba(196,245,66,.14)}
 .adc .pv{display:flex;align-items:center;gap:10px;color:var(--mu);font-size:12px}
 .adc .btn.lime{margin-top:0}
 .sb{margin-bottom:12px}
+.mode{display:flex;gap:6px;margin-bottom:12px}.mode .chip{flex:1;text-align:center;padding:8px 10px}
+.pane{display:none}.pane.on{display:block}
+.pick{all:unset;box-sizing:border-box;cursor:pointer;display:block;width:100%;text-align:center;padding:22px 12px;border:1px dashed rgba(196,245,66,.4);border-radius:14px;color:var(--mu);font-weight:700;transition:.2s}
+.pick:hover{border-color:var(--lime);color:var(--lime)}
+.ipv{display:none;position:relative;margin-top:10px;border-radius:14px;overflow:hidden;border:1px solid var(--ln);background:#000}.ipv.on{display:block;animation:pop .35s both}
+.ipv img{display:block;width:100%;max-height:300px;object-fit:contain}
+.ipv .x{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.65);color:#fff}
+textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--ln);color:var(--tx);border-radius:12px;padding:12px 13px;font:inherit;outline:none;resize:vertical;min-height:84px;margin-top:10px;transition:.25s}
+textarea:focus{border-color:var(--lime);box-shadow:0 0 0 4px rgba(196,245,66,.14)}
 .rgs,.lgd{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
 .chip.on{border-color:var(--lime);color:var(--lime);background:rgba(196,245,66,.12)}
 .lgd .chip{display:inline-flex;align-items:center;gap:6px}.lgd .chip i{width:9px;height:9px;border-radius:50%;display:block}.lgd .chip.off{opacity:.4;text-decoration:line-through}
@@ -142,9 +151,20 @@ mark{background:rgba(196,245,66,.28);color:var(--lime);border-radius:4px;padding
       <div class="cw" id="cw"></div><div class="xl" id="xl"></div></section>
     <section class="card up" id="up">
       <h3>নতুন Upload</h3>
+      <div class="mode" id="mode"><button class="chip on" data-m="yt">▶️ YouTube লিংক</button><button class="chip" data-m="im">🖼️ ছবি Post</button></div>
+      <div class="pane on" id="pyt">
       <div class="row"><input id="u" type="url" inputmode="url" placeholder="YouTube Short বা Video লিংক" autocomplete="off"><button class="btn gh" id="paste">Paste</button></div>
       <div class="prev" id="prev"><img id="pi" alt=""><div><p id="pt"></p><span class="tag" id="pg"></span></div></div>
       <button class="btn lime" id="go" disabled>Upload করুন</button>
+      </div>
+      <div class="pane" id="pim">
+        <input id="ifile" type="file" accept="image/*" hidden>
+        <button class="pick" id="ipick">📷 ছবি বেছে নাও (Gallery / Camera)</button>
+        <div class="ipv" id="ipv"><img id="iimg" alt=""><button class="x" id="irm" title="সরাও">✕</button></div>
+        <textarea id="icap" placeholder="Caption লেখো..."></textarea>
+        <div class="bar" id="ibar" style="display:none"><u id="ibu"></u></div>
+        <button class="btn lime" id="igo" disabled>ছবি Post করুন</button>
+      </div>
       <div class="steps" id="steps"><div class="ld" id="ld"><canvas id="cv"></canvas><div class="lt"><b>SYNCING LIBRARY</b><small>PREPARING YOUR FILES</small></div><div class="lp" id="lp">0%</div></div><div class="logs" id="logs"></div></div>
     </section>
     <section class="card ps" id="ps"><h3>তোমার পোস্ট <span id="pc"></span></h3><input class="sb" id="sq" type="search" placeholder="🔍 Reels খোঁজো (শব্দ ধরে ধরে)..." autocomplete="off"><div id="pl"><div class="empty">লোড হচ্ছে...</div></div></section>
@@ -261,6 +281,33 @@ $("go").onclick=async()=>{if(!info||busy)return;busy=true;const b=$("go");b.disa
   await success("Upload হয়েছে!",CHN.name+" • "+(s?"Short":"Video")+" Home আর Shorts এ দেখা যাবে");
  }catch(e){console.error(e);log("ব্যর্থ: "+e.message,"err");toast(/permission/i.test(e.message)?"Firestore rules এ লেখার অনুমতি নেই":"Upload হয়নি: "+e.message);await sleep(2200)}
  ldStop();$("steps").classList.remove("on");b.classList.remove("busy");b.textContent="Upload করুন";b.disabled=true;busy=false};
+/* ---- image post (Cloudinary) ---- */
+const CLOUD_NAME="xtbkyhrl",UPLOAD_PRESET="MeBook";
+let imgFile=null,imgUrl="";
+function cloudUp(file,onP){return new Promise((res,rej)=>{const fd=new FormData();fd.append("file",file);fd.append("upload_preset",UPLOAD_PRESET);
+ const x=new XMLHttpRequest();x.open("POST","https://api.cloudinary.com/v1_1/"+CLOUD_NAME+"/image/upload");
+ x.upload.onprogress=e=>{if(e.lengthComputable&&onP)onP(Math.round(e.loaded/e.total*100))};
+ x.onload=()=>{try{const r=JSON.parse(x.responseText);if(r.secure_url)res(r.secure_url);else rej(new Error((r.error&&r.error.message)||"Upload failed"))}catch(e){rej(e)}};
+ x.onerror=()=>rej(new Error("Network error"));x.send(fd)})}
+function imgReset(){if(imgUrl)URL.revokeObjectURL(imgUrl);imgFile=null;imgUrl="";$("ifile").value="";$("ipv").classList.remove("on");$("ipick").style.display="";$("igo").disabled=true}
+document.querySelectorAll("#mode .chip").forEach(b=>b.onclick=()=>{document.querySelectorAll("#mode .chip").forEach(x=>x.classList.toggle("on",x===b));$("pyt").classList.toggle("on",b.dataset.m==="yt");$("pim").classList.toggle("on",b.dataset.m==="im")});
+$("ipick").onclick=()=>$("ifile").click();
+$("ifile").onchange=()=>{const f=$("ifile").files[0];if(!f)return;
+ if(!/^image\//.test(f.type)){toast("শুধু ছবি দাও");$("ifile").value="";return}
+ if(f.size>15*1024*1024){toast("ছবি ১৫MB এর বেশি হবে না");$("ifile").value="";return}
+ if(imgUrl)URL.revokeObjectURL(imgUrl);imgFile=f;imgUrl=URL.createObjectURL(f);$("iimg").src=imgUrl;$("ipv").classList.add("on");$("ipick").style.display="none";$("igo").disabled=false};
+$("irm").onclick=imgReset;
+$("igo").onclick=async()=>{if(!imgFile||busy)return;busy=true;const b=$("igo"),bar=$("ibar"),bu=$("ibu");b.disabled=true;b.classList.add("busy");b.textContent="Upload হচ্ছে...";bar.style.display="block";bu.style.width="0";
+ try{const CHN=curCh(),cap=$("icap").value.trim();
+  if(!auth.currentUser){try{await signInAnonymously(auth)}catch(e){}}
+  const url=await cloudUp(imgFile,p=>{bu.style.width=Math.max(3,Math.round(p*.9))+"%"});
+  bu.style.width="95%";
+  await addDoc(collection(db,"posts"),{authorId:CHN.def?ME:CHN.id,authorName:CHN.name,authorUsername:CHN.def?ME:CHN.username,username:CHN.def?ME:CHN.username,authorAvatar:CHN.avatar,adminId:ME,channelId:CHN.id,isOfficial:false,verified:true,type:"image",caption:cap,image:url,movie:"",
+   audience:"public",likes:[],reactions:{},comments:[],shares:0,createdAt:serverTimestamp()});
+  bu.style.width="100%";$("icap").value="";imgReset();
+  await success("Post হয়েছে!",CHN.name+" • ছবি MeBook এ দেখা যাবে");
+ }catch(e){console.error(e);toast(/permission/i.test(e.message)?"Firestore rules এ লেখার অনুমতি নেই":"Post হয়নি: "+e.message)}
+ bar.style.display="none";bu.style.width="0";b.classList.remove("busy");b.textContent="ছবি Post করুন";b.disabled=!imgFile;busy=false};
 /* ---- chart ---- */
 let range=7;const hid={v:0,r:0,c:0};
 const SER=[{k:"v",n:"Views",c:"#60a5fa"},{k:"r",n:"Reactions",c:"#c4f542"},{k:"c",n:"Comments",c:"#ff9f43"}];
@@ -293,15 +340,15 @@ function chart(){const b=buckets(),n=b.length,w=$("cw"),W=600,H=230;
 document.querySelectorAll("#rgs .chip").forEach(c=>c.onclick=()=>{range=+c.dataset.r;document.querySelectorAll("#rgs .chip").forEach(x=>x.classList.toggle("on",x===c));chart()});
 /* ---- lists ---- */
 function render(){
- const mine=posts;cnt($("s1"),mine.filter(p=>!p.youtube.isShort).length);cnt($("s2"),mine.filter(p=>p.youtube.isShort).length);
+ const mine=posts;cnt($("s1"),mine.filter(p=>p.youtube&&!p.youtube.isShort).length);cnt($("s2"),mine.filter(p=>p.youtube&&p.youtube.isShort).length);
  cnt($("s3"),mine.reduce((a,p)=>a+rc(p),0));cnt($("s4"),mine.reduce((a,p)=>a+(p.comments||[]).length,0));
  chart();
  const words=$("sq").value.toLowerCase().split(/\s+/).filter(Boolean);
- const shown=words.length?mine.filter(p=>{const h=((p.caption||"")+" "+(p.youtube.title||"")+" "+(p.authorName||"")).toLowerCase();return words.every(w=>h.includes(w))}):mine;
+ const shown=words.length?mine.filter(p=>{const h=((p.caption||"")+" "+((p.youtube&&p.youtube.title)||"")+" "+(p.authorName||"")).toLowerCase();return words.every(w=>h.includes(w))}):mine;
  $("pc").textContent=words.length?shown.length+"/"+mine.length+" টা":mine.length+" টা";
  const pl=$("pl");pl.innerHTML=shown.length?"":'<div class="empty">'+(words.length?"কিছু পাওয়া যায়নি":"এখনো কিছু upload করা হয়নি")+'</div>';
  (words.length?shown:shown.slice(0,25)).forEach((p,i)=>{const e=document.createElement("div");e.className="it";e.style.setProperty("--i",i);
-  e.innerHTML=`<img class="th" src="https://i.ytimg.com/vi/${p.youtube.videoId}/default.jpg" alt=""><div class="tx"><b>${hl(p.caption||"(Title নেই)",words)}</b><small>${p.youtube.isShort?"Short":"Video"}${p.authorName&&p.authorName!==NAME?" • "+esc(p.authorName):""} • ${ago(p.createdAt)}</small><div class="ch2"><button class="chip" data-a="r">❤️ ${rc(p)}</button><button class="chip" data-a="c">💬 ${(p.comments||[]).length}</button><button class="chip d" data-a="d">মুছুন</button></div></div>`;
+  e.innerHTML=`<img class="th" src="${p.youtube?"https://i.ytimg.com/vi/"+esc(p.youtube.videoId)+"/default.jpg":esc(p.image||"")}" alt=""><div class="tx"><b>${hl(p.caption||"(Title নেই)",words)}</b><small>${p.youtube?(p.youtube.isShort?"Short":"Video"):"ছবি"}${p.authorName&&p.authorName!==NAME?" • "+esc(p.authorName):""} • ${ago(p.createdAt)}</small><div class="ch2"><button class="chip" data-a="r">❤️ ${rc(p)}</button><button class="chip" data-a="c">💬 ${(p.comments||[]).length}</button><button class="chip d" data-a="d">মুছুন</button></div></div>`;
   e.querySelector('[data-a=r]').onclick=()=>openM(p.id,"r");e.querySelector('[data-a=c]').onclick=()=>openM(p.id,"c");
   e.querySelector('[data-a=d]').onclick=async()=>{if(!confirm("এটা মুছে ফেলবে?"))return;try{e.classList.add("out");await deleteDoc(doc(db,"posts",p.id))}catch(x){e.classList.remove("out");toast("মোছা যায়নি")}};pl.appendChild(e)});
  const all=[];mine.forEach(p=>(p.comments||[]).forEach(c=>{if(c.uid!==ME&&c.uid!==p.authorId)all.push({c,p})}));all.sort((a,b)=>(b.c.at||0)-(a.c.at||0));
@@ -345,7 +392,7 @@ async function drawM(){const p=posts.find(x=>x.id===cur);if(!p){closeM();return}
   await setDoc(doc(db,"channels",c.id),{name:c.name,avatar:c.avatar,username:un,createdBy:ME,createdAt:serverTimestamp()});
   try{await setDoc(doc(db,"users",c.id),{name:c.name,fullName:c.name,displayName:c.name,username:un,photoURL:c.avatar,avatar:c.avatar,verified:true,isChannel:true,createdBy:ME,createdAt:serverTimestamp()})}catch(e){}}
   localStorage.removeItem("mvbd_channels")}}catch(e){}
- onSnapshot(query(collection(db,"posts"),orderBy("createdAt","desc"),limit(120)),s=>{posts=[];s.forEach(d=>{const x=d.data();if(x.type==="youtube"&&(x.authorId===ME||x.adminId===ME)&&x.youtube)posts.push({id:d.id,...x})});render()},
+ onSnapshot(query(collection(db,"posts"),orderBy("createdAt","desc"),limit(120)),s=>{posts=[];s.forEach(d=>{const x=d.data();if(((x.type==="youtube"&&x.youtube)||(x.type==="image"&&x.image))&&(x.authorId===ME||x.adminId===ME))posts.push({id:d.id,...x})});render()},
   ()=>{$("pl").innerHTML='<div class="empty">ডেটা আনা যায়নি (Firestore rules দেখো)</div>'})})();
 </script>
 </body>
