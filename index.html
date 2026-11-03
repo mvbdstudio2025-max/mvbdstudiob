@@ -19,7 +19,7 @@ body{margin:0;color:var(--tx);font:14px/1.45 system-ui,-apple-system,"Segoe UI",
 .nav button{all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;padding:11px 12px;border-radius:12px;color:var(--mu);font-weight:600;transition:.25s}
 .nav button:hover{color:var(--tx);background:var(--c1)}
 .nav button.on{color:var(--tx);background:linear-gradient(90deg,rgba(196,245,66,.2),rgba(47,220,107,.06));box-shadow:inset 0 0 0 1px rgba(196,245,66,.25)}
-.main{display:grid;gap:16px;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);grid-template-areas:"hd hd" "st st" "ch up" "ps cm";min-width:0}
+.main{display:grid;gap:16px;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);grid-template-areas:"hd hd" "sl sl" "st st" "ch up" "ps cm";min-width:0}
 .hd{grid-area:hd;display:flex;align-items:center;gap:12px;padding:12px 16px}
 .hd img{width:50px;height:50px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px var(--lime),0 0 22px rgba(196,245,66,.35)}
 .hd b{font-size:18px;display:block}.vf{font-style:normal;display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#3b9cff;color:#fff;font-size:11px;vertical-align:2px;margin-left:4px;box-shadow:0 0 12px rgba(59,156,255,.6)}.hd small{color:var(--mu)}.live{margin-left:auto;display:flex;align-items:center;gap:7px;color:var(--g);font-weight:700;font-size:12px}
@@ -27,7 +27,7 @@ body{margin:0;color:var(--tx);font:14px/1.45 system-ui,-apple-system,"Segoe UI",
 .st{grid-area:st;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 .st .card{padding:14px;animation-delay:calc(var(--i)*.08s)}
 .st small{color:var(--mu);display:flex;justify-content:space-between}.st b{font-size:26px;display:block;margin-top:4px;font-variant-numeric:tabular-nums}
-.ch{grid-area:ch}.up{grid-area:up}.ps{grid-area:ps}.cm{grid-area:cm}
+.sl{grid-area:sl}.ch{grid-area:ch}.up{grid-area:up}.ps{grid-area:ps}.cm{grid-area:cm}
 h3{margin:0 0 12px;font-size:16px;display:flex;justify-content:space-between;align-items:center}h3 span{color:var(--mu);font-size:12px;font-weight:500}
 .cw{position:relative;height:230px}.cw svg{width:100%;height:100%;display:block}
 .tip{position:absolute;transform:translate(-50%,-135%);background:rgba(20,40,30,.95);border:1px solid rgba(196,245,66,.35);padding:6px 11px;border-radius:10px;font-weight:700;pointer-events:none;white-space:nowrap;transition:left .2s,top .2s;box-shadow:0 0 18px rgba(47,220,107,.3)}
@@ -85,8 +85,29 @@ input:focus{border-color:var(--lime);box-shadow:0 0 0 4px rgba(196,245,66,.14)}
 .logs{margin-top:10px;max-height:132px;overflow:auto;background:#050c08;border:1px solid var(--ln);border-radius:14px;padding:10px 12px;font:12px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#8fb09e}
 .logs div{animation:in .3s both;word-break:break-word}.logs i{font-style:normal;color:#4f6c5d;margin-right:8px}
 .logs .ok{color:var(--g)}.logs .warn{color:var(--lime)}.logs .err{color:var(--red)}
+
+.sl{padding:14px 16px}
+.selb{display:flex!important;align-items:center;gap:10px;width:100%;background:var(--c1);border:1px solid var(--ln);padding:9px 12px;border-radius:14px}
+.selb b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.selb i{font-style:normal;color:var(--mu);transition:.25s}.selb.on i{transform:rotate(180deg)}
+.selb:hover,.selb.on{border-color:var(--lime)}
+.sll{display:none;margin-top:8px;border:1px solid var(--ln);border-radius:14px;overflow:hidden;background:rgba(0,0,0,.18)}.sll.on{display:block;animation:pop .3s both}
+.so{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;border-top:1px solid var(--ln);transition:.2s}.so:first-child{border-top:0}.so:hover{background:var(--c1)}
+.so.cu{background:linear-gradient(90deg,rgba(196,245,66,.16),transparent)}
+.so b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.so em{font-style:normal;color:var(--lime);font-weight:800}
+.so .dx{all:unset;cursor:pointer;width:26px;height:26px;border-radius:50%;text-align:center;line-height:26px;color:var(--mu);background:var(--c1)}.so .dx:hover{color:var(--red)}
+.so.add{color:var(--lime);font-weight:800}
+.adc{display:none;margin-top:8px;gap:8px;flex-direction:column;border:1px dashed rgba(196,245,66,.35);border-radius:14px;padding:12px}.adc.on{display:flex;animation:pop .3s both}
+.adc .pv{display:flex;align-items:center;gap:10px;color:var(--mu);font-size:12px}
+.adc .btn.lime{margin-top:0}
+.sb{margin-bottom:12px}
+.rgs,.lgd{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chip.on{border-color:var(--lime);color:var(--lime);background:rgba(196,245,66,.12)}
+.lgd .chip{display:inline-flex;align-items:center;gap:6px}.lgd .chip i{width:9px;height:9px;border-radius:50%;display:block}.lgd .chip.off{opacity:.4;text-decoration:line-through}
+.xl{display:flex;justify-content:space-between;color:var(--mu);font-size:11px;margin-top:4px;padding:0 2px}
+.tip div{display:flex;gap:6px;align-items:center;font-weight:700}.tip div i{width:8px;height:8px;border-radius:50%;display:block}
+mark{background:rgba(196,245,66,.28);color:var(--lime);border-radius:4px;padding:0 2px}
 @media(max-width:900px){.app{grid-template-columns:minmax(0,1fr);padding:10px}.side{position:static;flex-direction:row;align-items:center;overflow:auto}.nav{flex-direction:row;padding:6px}.nav button{white-space:nowrap;padding:9px 12px}.brand span{display:none}
-.main{grid-template-columns:minmax(0,1fr);grid-template-areas:"hd" "st" "up" "ch" "ps" "cm"}.st{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.main{grid-template-columns:minmax(0,1fr);grid-template-areas:"hd" "sl" "st" "up" "ch" "ps" "cm"}.st{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -97,14 +118,28 @@ input:focus{border-color:var(--lime);box-shadow:0 0 0 4px rgba(196,245,66,.14)}
     <nav class="card nav" id="nav"><button class="on" data-t="hd">🏠 Dashboard</button><button data-t="up">⬆️ Upload</button><button data-t="ps">🎬 Posts</button><button data-t="cm">💬 Comments</button></nav>
   </aside>
   <main class="main">
-    <section class="card hd" id="hd"><img id="pf" alt=""><div><b>MVBD STUDIO <em class="vf">✔</em></b></div><div class="live"><u></u>Live</div></section>
+    <section class="card hd" id="hd"><img id="pf" alt=""><div><b><span id="hn">MVBD STUDIO</span> <em class="vf">✔</em></b></div><div class="live"><u></u>Live</div></section>
+    <section class="card sl" id="sl">
+      <h3>যে নামে Post হবে <span>Channel select করো</span></h3>
+      <button class="btn selb" id="selb"><img class="av" id="sa" alt=""><b id="sn"></b><i>▾</i></button>
+      <div class="sll" id="sll"></div>
+      <div class="adc" id="adc">
+        <input id="cn" placeholder="Channel এর নাম" autocomplete="off">
+        <input id="cl2" type="url" inputmode="url" placeholder="Postimage logo লিংক (i.postimg.cc/... direct link)" autocomplete="off">
+        <div class="pv"><img class="av" id="cpv" alt=""><span>Logo preview</span></div>
+        <div class="row"><button class="btn lime" id="csv">Save করো</button><button class="btn gh" id="ccx">বাতিল</button></div>
+      </div>
+    </section>
     <section class="st">
       <div class="card" style="--i:1"><small>Videos <span>🎞️</span></small><b id="s1">0</b></div>
       <div class="card" style="--i:2"><small>Shorts <span>📱</span></small><b id="s2">0</b></div>
       <div class="card" style="--i:3"><small>Reactions <span>❤️</span></small><b id="s3">0</b></div>
       <div class="card" style="--i:4"><small>Comments <span>💬</span></small><b id="s4">0</b></div>
     </section>
-    <section class="card ch"><h3>Reactions <span>শেষ ১২টা পোস্ট</span></h3><div class="cw" id="cw"></div></section>
+    <section class="card ch"><h3>Report <span id="rt">শেষ ৭ দিন</span></h3>
+      <div class="rgs" id="rgs"><button class="chip on" data-r="7">৭ দিন</button><button class="chip" data-r="15">১৫ দিন</button><button class="chip" data-r="30">৩০ দিন</button><button class="chip" data-r="90">৩ মাস</button></div>
+      <div class="lgd" id="lgd"></div>
+      <div class="cw" id="cw"></div><div class="xl" id="xl"></div></section>
     <section class="card up" id="up">
       <h3>নতুন Upload</h3>
       <div class="row"><input id="u" type="url" inputmode="url" placeholder="YouTube Short বা Video লিংক" autocomplete="off"><button class="btn gh" id="paste">Paste</button></div>
@@ -112,7 +147,7 @@ input:focus{border-color:var(--lime);box-shadow:0 0 0 4px rgba(196,245,66,.14)}
       <button class="btn lime" id="go" disabled>Upload করুন</button>
       <div class="steps" id="steps"><div class="ld" id="ld"><canvas id="cv"></canvas><div class="lt"><b>SYNCING LIBRARY</b><small>PREPARING YOUR FILES</small></div><div class="lp" id="lp">0%</div></div><div class="logs" id="logs"></div></div>
     </section>
-    <section class="card ps" id="ps"><h3>তোমার পোস্ট <span id="pc"></span></h3><div id="pl"><div class="empty">লোড হচ্ছে...</div></div></section>
+    <section class="card ps" id="ps"><h3>তোমার পোস্ট <span id="pc"></span></h3><input class="sb" id="sq" type="search" placeholder="🔍 Reels খোঁজো (শব্দ ধরে ধরে)..." autocomplete="off"><div id="pl"><div class="empty">লোড হচ্ছে...</div></div></section>
     <section class="card cm" id="cm"><h3>সর্বশেষ Comment <span>Reply দাও</span></h3><div id="cl"><div class="empty">লোড হচ্ছে...</div></div></section>
   </main>
 </div>
@@ -122,7 +157,7 @@ input:focus{border-color:var(--lime);box-shadow:0 0 0 4px rgba(196,245,66,.14)}
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {getAuth,signInAnonymously} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import {getFirestore,collection,addDoc,deleteDoc,updateDoc,getDoc,doc,query,orderBy,limit,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {getFirestore,collection,addDoc,deleteDoc,updateDoc,setDoc,getDoc,doc,query,orderBy,limit,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 const app=initializeApp({apiKey:"AIzaSyBtBaUSIlXwJDWytaiOfal3ha7OmZEwuYM",authDomain:"mvbdminiapp.firebaseapp.com",projectId:"mvbdminiapp",storageBucket:"mvbdminiapp.firebasestorage.app",messagingSenderId:"668051748254",appId:"1:668051748254:web:d4804b68429d853a0c928f"});
 const auth=getAuth(app),db=getFirestore(app);
 const ME="mvbdstudio",NAME="MVBD STUDIO",PFP="https://i.postimg.cc/cJdK6tP8/IMG-20261101-130001-871.jpg";
@@ -132,6 +167,45 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const rc=p=>Object.keys(p.reactions||{}).filter(k=>p.reactions[k]).length;
 let posts=[],info=null,title="",busy=false,cur=null,tab="r",replyId=null;
 $("pf").src=PFP;
+/* ---- channels ---- */
+const DEF={id:"mvbd",name:NAME,avatar:PFP,def:true};
+const fb=n=>"https://ui-avatars.com/api/?background=16a34a&color=fff&name="+encodeURIComponent(n||"C");
+const fixImg=(img,n)=>{img.onerror=()=>{img.onerror=null;img.src=fb(n)}};
+const slug=n=>(n.toLowerCase().replace(/[^a-z0-9]+/g,"")||"channel").slice(0,20);
+let CH=[DEF],selId="mvbd";
+const curCh=()=>CH.find(c=>c.id===selId)||DEF;
+function drawCh(){const c=curCh();
+ $("sa").src=c.avatar;fixImg($("sa"),c.name);$("sn").textContent=c.name;
+ $("pf").src=c.avatar;fixImg($("pf"),c.name);$("hn").textContent=c.name;
+ const l=$("sll");l.innerHTML="";
+ CH.forEach(x=>{const e=document.createElement("div");e.className="so"+(x.id===selId?" cu":"");
+  e.innerHTML=`<img class="av" src="${esc(x.avatar)}" alt=""><b>${esc(x.name)}${x.def?" (Default)":""}</b>${x.id===selId?"<em>✔</em>":""}${x.def?"":'<button class="dx" title="মুছুন">✕</button>'}`;
+  fixImg(e.querySelector("img"),x.name);
+  e.onclick=ev=>{if(ev.target.closest(".dx"))return;selId=x.id;drawCh();closeSel()};
+  const d=e.querySelector(".dx");if(d)d.onclick=async()=>{if(!confirm("\""+x.name+"\" channel টা মুছে ফেলবে? (আগের পোস্টগুলো থাকবে)"))return;try{await deleteDoc(doc(db,"channels",x.id));try{await deleteDoc(doc(db,"users",x.id))}catch(e){}if(selId===x.id)selId="mvbd";drawCh()}catch(e){toast("মোছা যায়নি")}};
+  l.appendChild(e)});
+ const a=document.createElement("div");a.className="so add";a.innerHTML="<span>➕</span><b>নতুন Channel যোগ করো</b>";a.onclick=()=>{closeSel();openAdd()};l.appendChild(a)}
+function closeSel(){$("sll").classList.remove("on");$("selb").classList.remove("on")}
+function openAdd(){$("adc").classList.add("on");$("cn").value="";$("cl2").value="";$("cpv").src=fb("?");$("cn").focus()}
+$("selb").onclick=()=>{$("adc").classList.remove("on");const o=$("sll").classList.toggle("on");$("selb").classList.toggle("on",o)};
+$("ccx").onclick=()=>$("adc").classList.remove("on");
+$("cl2").oninput=()=>{const u=$("cl2").value.trim();$("cpv").src=/^https?:\/\//i.test(u)?u:fb($("cn").value);fixImg($("cpv"),$("cn").value)};
+$("csv").onclick=async()=>{const n=$("cn").value.trim(),u=$("cl2").value.trim(),b=$("csv");
+ if(!n){toast("Channel এর নাম দাও");return}
+ if(!/^https?:\/\//i.test(u)){toast("Postimage লিংক ঠিকমতো বসাও");return}
+ if(CH.some(c=>c.name.toLowerCase()===n.toLowerCase())){toast("এই নামে channel আগেই আছে");return}
+ b.disabled=true;b.textContent="Save হচ্ছে...";
+ try{if(!auth.currentUser){try{await signInAnonymously(auth)}catch(e){}}
+  const id="ch_"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),un=slug(n);
+  await setDoc(doc(db,"channels",id),{name:n,avatar:u,username:un,createdBy:ME,createdAt:serverTimestamp()});
+  let warn=false;
+  try{await setDoc(doc(db,"users",id),{name:n,fullName:n,displayName:n,username:un,photoURL:u,avatar:u,verified:true,isChannel:true,createdBy:ME,createdAt:serverTimestamp()})}catch(e){warn=true}
+  selId=id;$("adc").classList.remove("on");
+  if(warn)toast("Channel save হয়েছে, কিন্তু users এ লেখার অনুমতি নেই (Firestore rules)");
+  else await success("Channel যোগ হয়েছে!",n)
+ }catch(e){console.error(e);toast(/permission/i.test(e.message)?"Firestore rules এ channels এ লেখার অনুমতি নেই":"Save হয়নি: "+e.message)}
+ b.disabled=false;b.textContent="Save করো"};
+drawCh();
 function toast(m){const t=$("toast");t.textContent=m;t.className="toast on";clearTimeout(toast.t);toast.t=setTimeout(()=>t.className="toast",3200)}
 async function success(t,m){$("okt").textContent=t;$("okm").textContent=m;const o=$("ok");o.classList.remove("on");void o.offsetWidth;o.classList.add("on");await sleep(1800);o.classList.remove("on")}
 function cnt(el,to){const f=+el.dataset.v||0;el.dataset.v=to;const t0=performance.now();(function s(t){const k=Math.min(1,(t-t0)/700),e=1-Math.pow(1-k,3);el.textContent=Math.round(f+(to-f)*e);if(k<1)requestAnimationFrame(s)})(t0)}
@@ -177,43 +251,67 @@ $("go").onclick=async()=>{if(!info||busy)return;busy=true;const b=$("go");b.disa
   log(title?"Title পাওয়া গেছে: "+title:"Title পাওয়া যায়নি",title?"ok":"warn");
   log("MeBook এ পোস্ট হচ্ছে...");step(75);
   if(!auth.currentUser){log("Firebase এ কানেক্ট হচ্ছে...");try{await signInAnonymously(auth)}catch(e){}}
-  const ref=await addDoc(collection(db,"posts"),{authorId:ME,authorName:NAME,authorUsername:ME,username:ME,authorAvatar:PFP,isOfficial:false,verified:true,type:"youtube",caption:title,image:"",movie:"",
+  const CHN=curCh();log("Channel: "+CHN.name);
+  const ref=await addDoc(collection(db,"posts"),{authorId:CHN.def?ME:CHN.id,authorName:CHN.name,authorUsername:CHN.def?ME:CHN.username,username:CHN.def?ME:CHN.username,authorAvatar:CHN.avatar,adminId:ME,channelId:CHN.id,isOfficial:false,verified:true,type:"youtube",caption:title,image:"",movie:"",
    youtube:{videoId:info.id,url:"https://www.youtube.com/"+(info.short?"shorts/":"watch?v=")+info.id,isShort:info.short,title},
    audience:"public",likes:[],reactions:{},comments:[],shares:0,createdAt:serverTimestamp()});
   log("পোস্ট তৈরি হয়েছে (#"+ref.id.slice(0,6)+")","ok");
   step(100);await reach(100);log("Upload সম্পন্ন — 100%","ok");await sleep(600);
   const s=info.short;$("u").value="";info=null;$("prev").classList.remove("on");
-  await success("Upload হয়েছে!",(s?"Short":"Video")+" Home আর Shorts এ দেখা যাবে");
+  await success("Upload হয়েছে!",CHN.name+" • "+(s?"Short":"Video")+" Home আর Shorts এ দেখা যাবে");
  }catch(e){console.error(e);log("ব্যর্থ: "+e.message,"err");toast(/permission/i.test(e.message)?"Firestore rules এ লেখার অনুমতি নেই":"Upload হয়নি: "+e.message);await sleep(2200)}
  ldStop();$("steps").classList.remove("on");b.classList.remove("busy");b.textContent="Upload করুন";b.disabled=true;busy=false};
 /* ---- chart ---- */
-function chart(){const ps=[...posts].reverse().slice(-12),n=ps.length,w=$("cw");
- if(n<2){w.innerHTML='<div class="empty" style="padding-top:90px">অন্তত ২টা পোস্ট হলে chart দেখাবে</div>';return}
- const W=600,H=230,v=ps.map(rc),mx=Math.max(...v,1),X=i=>24+i*(W-48)/(n-1),Y=x=>H-34-x/mx*(H-76);
- let d=`M${X(0)},${Y(v[0])}`;for(let i=1;i<n;i++){const cx=(X(i-1)+X(i))/2;d+=` C${cx},${Y(v[i-1])} ${cx},${Y(v[i])} ${X(i)},${Y(v[i])}`}
+let range=7;const hid={v:0,r:0,c:0};
+const SER=[{k:"v",n:"Views",c:"#60a5fa"},{k:"r",n:"Reactions",c:"#c4f542"},{k:"c",n:"Comments",c:"#ff9f43"}];
+const DAY=864e5;
+function vw(p){const v=p.views??p.viewCount??p.viewsCount??p.views_count;if(typeof v==="number")return v;if(Array.isArray(v))return v.length;if(v&&typeof v==="object")return Object.keys(v).length;return 0}
+function buckets(){const weekly=range>=90,n=weekly?Math.ceil(range/7):range,size=weekly?7*DAY:DAY,e=new Date();e.setHours(23,59,59,999);const endT=e.getTime(),st=endT-n*size+1;
+ const a=Array.from({length:n},(_,i)=>({t:st+i*size,v:0,r:0,c:0}));
+ posts.forEach(p=>{const t=p.createdAt&&p.createdAt.seconds?p.createdAt.seconds*1000:Date.now(),i=Math.floor((t-st)/size);if(i>=0&&i<n){a[i].v+=vw(p);a[i].r+=rc(p);a[i].c+=(p.comments||[]).length}});return a}
+const fd=t=>{const d=new Date(t);return d.getDate()+"/"+(d.getMonth()+1)};
+function chart(){const b=buckets(),n=b.length,w=$("cw"),W=600,H=230;
+ const act=SER.filter(x=>!hid[x.k]),mx=Math.max(1,...act.flatMap(x=>b.map(r=>r[x.k])));
+ $("rt").textContent=range>=90?"শেষ ৩ মাস (সাপ্তাহিক)":"শেষ "+range+" দিন";
+ $("lgd").innerHTML="";SER.forEach(x=>{const t=b.reduce((a,r)=>a+r[x.k],0),e=document.createElement("button");e.className="chip"+(hid[x.k]?" off":"");e.innerHTML=`<i style="background:${x.c}"></i>${x.n} ${t}`;e.onclick=()=>{hid[x.k]=hid[x.k]?0:1;chart()};$("lgd").appendChild(e)});
+ const xl=$("xl");xl.innerHTML="";const tk=Math.min(5,n);for(let k=0;k<tk;k++){const i=Math.round(k*(n-1)/(tk-1));xl.innerHTML+=`<span>${fd(b[i].t)}</span>`}
+ const X=i=>24+i*(W-48)/(n-1),Y=x=>H-34-x/mx*(H-76);
  let g="";for(let k=0;k<4;k++){const y=24+k*(H-58)/3;g+=`<line x1="0" x2="${W}" y1="${y}" y2="${y}" stroke="rgba(255,255,255,.06)"/><text x="0" y="${y-4}" fill="#7f9a8d" font-size="10">${Math.round(mx-k*mx/3)}</text>`}
- w.innerHTML=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><defs><linearGradient id="fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2fdc6b" stop-opacity=".45"/><stop offset="1" stop-color="#2fdc6b" stop-opacity="0"/></linearGradient><filter id="gl"><feGaussianBlur stdDeviation="4"/></filter></defs>${g}<path d="${d} L${X(n-1)},${H-34} L${X(0)},${H-34}Z" fill="url(#fg)" opacity="0" style="animation:in 1s .6s forwards"/><path d="${d}" fill="none" stroke="#2fdc6b" stroke-width="5" filter="url(#gl)" opacity=".6"/><path id="ln" d="${d}" fill="none" stroke="#c4f542" stroke-width="2.5" stroke-linecap="round"/><line id="vl" y1="10" y2="${H-34}" stroke="#c4f542" stroke-dasharray="4 4" opacity="0"/><circle id="dt" r="6" fill="#06100c" stroke="#c4f542" stroke-width="3" opacity="0"/></svg><div class="tip" id="tp" style="opacity:0"></div>`;
- const l=$("ln"),L=l.getTotalLength();l.style.strokeDasharray=L;l.style.strokeDashoffset=L;l.getBoundingClientRect();l.style.transition="stroke-dashoffset 1.4s ease";l.style.strokeDashoffset=0;
+ let lines="",dots="";
+ act.forEach(x=>{const v=b.map(r=>r[x.k]);let d=`M${X(0)},${Y(v[0])}`;for(let i=1;i<n;i++){const cx=(X(i-1)+X(i))/2;d+=` C${cx},${Y(v[i-1])} ${cx},${Y(v[i])} ${X(i)},${Y(v[i])}`}
+  lines+=`<path d="${d}" fill="none" stroke="${x.c}" stroke-width="5" filter="url(#gl)" opacity=".35"/><path class="ln" d="${d}" fill="none" stroke="${x.c}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+  dots+=`<circle class="dt" data-k="${x.k}" r="5" fill="#06100c" stroke="${x.c}" stroke-width="3" opacity="0"/>`});
+ w.innerHTML=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><defs><filter id="gl"><feGaussianBlur stdDeviation="4"/></filter></defs>${g}${lines}<line id="vl" y1="10" y2="${H-34}" stroke="#c4f542" stroke-dasharray="4 4" opacity="0"/>${dots}</svg><div class="tip" id="tp" style="opacity:0"></div>`;
+ w.querySelectorAll(".ln").forEach(l=>{const L=l.getTotalLength();l.style.strokeDasharray=L;l.style.strokeDashoffset=L;l.getBoundingClientRect();l.style.transition="stroke-dashoffset 1.2s ease";l.style.strokeDashoffset=0});
  const mv=e=>{const r=w.getBoundingClientRect(),px=((e.touches?e.touches[0].clientX:e.clientX)-r.left)/r.width*W;let i=Math.round((px-24)/((W-48)/(n-1)));i=Math.max(0,Math.min(n-1,i));
-  const x=X(i),y=Y(v[i]);$("vl").setAttribute("x1",x);$("vl").setAttribute("x2",x);$("vl").style.opacity=1;$("dt").setAttribute("cx",x);$("dt").setAttribute("cy",y);$("dt").style.opacity=1;
-  const t=$("tp");t.style.opacity=1;t.style.left=x/W*100+"%";t.style.top=y/H*100+"%";t.innerHTML=`${v[i]} reactions<small>${esc((ps[i].caption||"").slice(0,22))}</small>`};
+  const x=X(i);$("vl").setAttribute("x1",x);$("vl").setAttribute("x2",x);$("vl").style.opacity=1;let top=H;
+  w.querySelectorAll(".dt").forEach(c=>{const y=Y(b[i][c.dataset.k]);top=Math.min(top,y);c.setAttribute("cx",x);c.setAttribute("cy",y);c.style.opacity=1});
+  const t=$("tp");t.style.opacity=1;t.style.left=Math.max(16,Math.min(84,x/W*100))+"%";t.style.top=top/H*100+"%";
+  const e2=range>=90?" – "+fd(b[i].t+6*DAY):"";
+  t.innerHTML=`<small>${fd(b[i].t)}${e2}</small>`+act.map(s=>`<div><i style="background:${s.c}"></i>${s.n}: ${b[i][s.k]}</div>`).join("")};
  w.onmousemove=mv;w.ontouchmove=mv;w.ontouchstart=mv}
+document.querySelectorAll("#rgs .chip").forEach(c=>c.onclick=()=>{range=+c.dataset.r;document.querySelectorAll("#rgs .chip").forEach(x=>x.classList.toggle("on",x===c));chart()});
 /* ---- lists ---- */
 function render(){
  const mine=posts;cnt($("s1"),mine.filter(p=>!p.youtube.isShort).length);cnt($("s2"),mine.filter(p=>p.youtube.isShort).length);
  cnt($("s3"),mine.reduce((a,p)=>a+rc(p),0));cnt($("s4"),mine.reduce((a,p)=>a+(p.comments||[]).length,0));
- $("pc").textContent=mine.length+" টা";chart();
- const pl=$("pl");pl.innerHTML=mine.length?"":'<div class="empty">এখনো কিছু upload করা হয়নি</div>';
- mine.slice(0,25).forEach((p,i)=>{const e=document.createElement("div");e.className="it";e.style.setProperty("--i",i);
-  e.innerHTML=`<img class="th" src="https://i.ytimg.com/vi/${p.youtube.videoId}/default.jpg" alt=""><div class="tx"><b>${esc(p.caption||"(Title নেই)")}</b><small>${p.youtube.isShort?"Short":"Video"} • ${ago(p.createdAt)}</small><div class="ch2"><button class="chip" data-a="r">❤️ ${rc(p)}</button><button class="chip" data-a="c">💬 ${(p.comments||[]).length}</button><button class="chip d" data-a="d">মুছুন</button></div></div>`;
+ chart();
+ const words=$("sq").value.toLowerCase().split(/\s+/).filter(Boolean);
+ const shown=words.length?mine.filter(p=>{const h=((p.caption||"")+" "+(p.youtube.title||"")+" "+(p.authorName||"")).toLowerCase();return words.every(w=>h.includes(w))}):mine;
+ $("pc").textContent=words.length?shown.length+"/"+mine.length+" টা":mine.length+" টা";
+ const pl=$("pl");pl.innerHTML=shown.length?"":'<div class="empty">'+(words.length?"কিছু পাওয়া যায়নি":"এখনো কিছু upload করা হয়নি")+'</div>';
+ (words.length?shown:shown.slice(0,25)).forEach((p,i)=>{const e=document.createElement("div");e.className="it";e.style.setProperty("--i",i);
+  e.innerHTML=`<img class="th" src="https://i.ytimg.com/vi/${p.youtube.videoId}/default.jpg" alt=""><div class="tx"><b>${hl(p.caption||"(Title নেই)",words)}</b><small>${p.youtube.isShort?"Short":"Video"}${p.authorName&&p.authorName!==NAME?" • "+esc(p.authorName):""} • ${ago(p.createdAt)}</small><div class="ch2"><button class="chip" data-a="r">❤️ ${rc(p)}</button><button class="chip" data-a="c">💬 ${(p.comments||[]).length}</button><button class="chip d" data-a="d">মুছুন</button></div></div>`;
   e.querySelector('[data-a=r]').onclick=()=>openM(p.id,"r");e.querySelector('[data-a=c]').onclick=()=>openM(p.id,"c");
   e.querySelector('[data-a=d]').onclick=async()=>{if(!confirm("এটা মুছে ফেলবে?"))return;try{e.classList.add("out");await deleteDoc(doc(db,"posts",p.id))}catch(x){e.classList.remove("out");toast("মোছা যায়নি")}};pl.appendChild(e)});
- const all=[];mine.forEach(p=>(p.comments||[]).forEach(c=>{if(c.uid!==ME)all.push({c,p})}));all.sort((a,b)=>(b.c.at||0)-(a.c.at||0));
+ const all=[];mine.forEach(p=>(p.comments||[]).forEach(c=>{if(c.uid!==ME&&c.uid!==p.authorId)all.push({c,p})}));all.sort((a,b)=>(b.c.at||0)-(a.c.at||0));
  const cl=$("cl");cl.innerHTML=all.length?"":'<div class="empty">এখনো কেউ comment করেনি</div>';
  all.slice(0,8).forEach(({c,p},i)=>{const e=document.createElement("div");e.className="it";e.style.setProperty("--i",i);
   e.innerHTML=`<img class="av" src="${esc(c.avatar||"https://ui-avatars.com/api/?background=16a34a&color=fff&name="+encodeURIComponent(c.name||"U"))}" alt=""><div class="tx"><b>${esc(c.name||"User")}</b><small style="white-space:normal">${esc(c.text||"(sticker)")}</small><div class="ch2"><button class="chip">↩ Reply</button></div></div>`;
   e.querySelector(".chip").onclick=()=>openM(p.id,"c",c.id);cl.appendChild(e)});
  if(cur&&!$("ov").classList.contains("typing"))drawM()}
+function hl(t,w){if(!w.length)return esc(t);const re=new RegExp("("+w.map(x=>x.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")).join("|")+")","gi");return String(t).split(re).map((x,i)=>i%2?"<mark>"+esc(x)+"</mark>":esc(x)).join("")}
+$("sq").oninput=()=>render();
 function ago(t){if(!t||!t.seconds)return"এইমাত্র";const s=Math.floor(Date.now()/1e3-t.seconds);if(s<60)return"এইমাত্র";if(s<3600)return Math.floor(s/60)+" মিনিট আগে";if(s<86400)return Math.floor(s/3600)+" ঘণ্টা আগে";return Math.floor(s/86400)+" দিন আগে"}
 /* ---- modal ---- */
 const uc={};async function uinfo(uid){if(uc[uid])return uc[uid];try{const d=(await getDoc(doc(db,"users",uid))).data()||{};return uc[uid]={name:d.name||d.fullName||d.displayName||d.username||"User",avatar:d.photoURL||d.avatar||""}}catch(e){return{name:"User",avatar:""}}}
@@ -229,19 +327,25 @@ async function drawM(){const p=posts.find(x=>x.id===cur);if(!p){closeM();return}
   ks.forEach((k,i)=>{const u=us[i],e=document.createElement("div");e.className="cmt";e.style.animationDelay=i*.04+"s";
    e.innerHTML=`<img class="av" src="${esc(u.avatar||"https://ui-avatars.com/api/?background=16a34a&color=fff&name="+encodeURIComponent(u.name))}" alt=""><div style="align-self:center;font-weight:700">${esc(u.name)}</div><span class="rx">${RX[p.reactions[k]]||"👍"}</span>`;mb.appendChild(e)});return}
  const cs=p.comments||[],top=cs.filter(c=>!c.parentId);mb.innerHTML=cs.length?"":'<div class="empty">এখনো কোনো comment নেই</div>';
- const row=(c,rp)=>{const e=document.createElement("div");const mine=c.uid===ME;e.className="cmt"+(rp?" rp":"");
+ const row=(c,rp)=>{const e=document.createElement("div");const mine=c.uid===ME||c.uid===p.authorId;e.className="cmt"+(rp?" rp":"");
   e.innerHTML=`<img class="av" src="${esc(c.avatar||"https://ui-avatars.com/api/?background=16a34a&color=fff&name="+encodeURIComponent(c.name||"U"))}" alt=""><div><div class="bub${mine?" me":""}"><b>${esc(c.name||"User")}${mine?" • তুমি":""}</b><p>${esc(c.text||"(sticker)")}</p></div>${mine?"":'<button class="chip" style="margin-top:5px">↩ Reply</button>'}</div>`;
   const b=e.querySelector(".chip");if(b)b.onclick=()=>{replyId=c.id;drawM()};mb.appendChild(e);
-  if(replyId===c.id){const r=document.createElement("div");r.className="rpl";r.innerHTML='<input placeholder="MVBD STUDIO হিসেবে reply..."><button class="btn">পাঠাও</button>';mb.appendChild(r);const inp=r.querySelector("input");setTimeout(()=>inp.focus(),50);
+  if(replyId===c.id){const r=document.createElement("div");r.className="rpl";r.innerHTML='<input placeholder="'+esc(p.authorName||NAME)+' হিসেবে reply..."><button class="btn">পাঠাও</button>';mb.appendChild(r);const inp=r.querySelector("input");setTimeout(()=>inp.focus(),50);
    const send=async()=>{const text=inp.value.trim();if(!text)return;r.querySelector(".btn").textContent="...";
     try{if(!auth.currentUser){try{await signInAnonymously(auth)}catch(x){}}const ref=doc(db,"posts",p.id),cur2=(await getDoc(ref)).data().comments||[];
-     cur2.push({id:"c_"+Date.now().toString(36)+Math.random().toString(36).slice(2,7),uid:ME,name:NAME,avatar:PFP,text,sticker:"",image:"",at:Date.now(),reactions:{},parentId:c.parentId||c.id});
-     await updateDoc(ref,{comments:cur2});replyId=null;await success("Reply পাঠানো হয়েছে!","MVBD STUDIO হিসেবে");}catch(x){toast("Reply যায়নি");r.querySelector(".btn").textContent="পাঠাও"}};
+     cur2.push({id:"c_"+Date.now().toString(36)+Math.random().toString(36).slice(2,7),uid:p.authorId||ME,name:p.authorName||NAME,avatar:p.authorAvatar||PFP,text,sticker:"",image:"",at:Date.now(),reactions:{},parentId:c.parentId||c.id});
+     await updateDoc(ref,{comments:cur2});replyId=null;await success("Reply পাঠানো হয়েছে!",(p.authorName||NAME)+" হিসেবে");}catch(x){toast("Reply যায়নি");r.querySelector(".btn").textContent="পাঠাও"}};
    r.querySelector(".btn").onclick=send;inp.onkeydown=ev=>{if(ev.key==="Enter")send()}}};
  top.forEach(c=>{row(c,false);cs.filter(r=>r.parentId===c.id).forEach(r=>row(r,true))});mb.scrollTop=keep}
 /* ---- start ---- */
 (async()=>{try{await signInAnonymously(auth)}catch(e){}
- onSnapshot(query(collection(db,"posts"),orderBy("createdAt","desc"),limit(120)),s=>{posts=[];s.forEach(d=>{const x=d.data();if(x.type==="youtube"&&x.authorId===ME&&x.youtube)posts.push({id:d.id,...x})});render()},
+ onSnapshot(collection(db,"channels"),s=>{const a=[];s.forEach(d=>{const x=d.data();if(x.createdBy===ME&&x.name)a.push({id:d.id,name:x.name,avatar:x.avatar||fb(x.name),username:x.username||slug(x.name),t:x.createdAt&&x.createdAt.seconds||0})});
+  a.sort((m,n)=>m.t-n.t);CH=[DEF,...a];if(!CH.some(c=>c.id===selId))selId="mvbd";drawCh()},()=>{});
+ try{const old=JSON.parse(localStorage.getItem("mvbd_channels")||"[]");if(Array.isArray(old)&&old.length){for(const c of old){if(!c||!c.id||!c.name)continue;const un=slug(c.name);
+  await setDoc(doc(db,"channels",c.id),{name:c.name,avatar:c.avatar,username:un,createdBy:ME,createdAt:serverTimestamp()});
+  try{await setDoc(doc(db,"users",c.id),{name:c.name,fullName:c.name,displayName:c.name,username:un,photoURL:c.avatar,avatar:c.avatar,verified:true,isChannel:true,createdBy:ME,createdAt:serverTimestamp()})}catch(e){}}
+  localStorage.removeItem("mvbd_channels")}}catch(e){}
+ onSnapshot(query(collection(db,"posts"),orderBy("createdAt","desc"),limit(120)),s=>{posts=[];s.forEach(d=>{const x=d.data();if(x.type==="youtube"&&(x.authorId===ME||x.adminId===ME)&&x.youtube)posts.push({id:d.id,...x})});render()},
   ()=>{$("pl").innerHTML='<div class="empty">ডেটা আনা যায়নি (Firestore rules দেখো)</div>'})})();
 </script>
 </body>
