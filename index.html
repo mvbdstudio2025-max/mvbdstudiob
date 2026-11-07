@@ -196,7 +196,7 @@ const RX={like:"👍",love:"❤️",care:"🥰",haha:"😂",wow:"😮",sad:"😢
 const $=id=>document.getElementById(id),sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const rc=p=>Object.keys(p.reactions||{}).filter(k=>p.reactions[k]).length;
-let posts=[],info=null,title="",busy=false,cur=null,tab="r",replyId=null;
+let ready=false,showN=25,posts=[],info=null,title="",busy=false,cur=null,tab="r",replyId=null;
 $("pf").src=PFP;
 /* ---- channels ---- */
 const DEF={id:"mvbd",name:NAME,avatar:PFP,def:true};
@@ -215,7 +215,7 @@ function drawCh(){const c=curCh();
   e.onclick=ev=>{if(ev.target.closest(".dx"))return;selId=x.id;drawCh();closeSel()};
   const d=e.querySelector(".dx");if(d)d.onclick=async()=>{if(!confirm("\""+x.name+"\" channel টা মুছে ফেলবে? (আগের পোস্টগুলো থাকবে)"))return;try{await deleteDoc(doc(db,"channels",x.id));try{await deleteDoc(doc(db,"users",x.id))}catch(e){}if(selId===x.id)selId="mvbd";drawCh()}catch(e){toast("মোছা যায়নি")}};
   l.appendChild(e)});
- const a=document.createElement("div");a.className="so add";a.innerHTML="<span>➕</span><b>নতুন Channel যোগ করো</b>";a.onclick=()=>{closeSel();openAdd()};l.appendChild(a);watchFw()}
+ const a=document.createElement("div");a.className="so add";a.innerHTML="<span>➕</span><b>নতুন Channel যোগ করো</b>";a.onclick=()=>{closeSel();openAdd()};l.appendChild(a);watchFw();if(ready){showN=25;render()}}
 function closeSel(){$("sll").classList.remove("on");$("selb").classList.remove("on")}
 function openAdd(){$("adc").classList.add("on");$("cn").value="";$("cl2").value="";$("cpv").src=fb("?");$("cn").focus()}
 $("selb").onclick=()=>{$("adc").classList.remove("on");const o=$("sll").classList.toggle("on");$("selb").classList.toggle("on",o)};
@@ -369,17 +369,18 @@ function chart(){const b=buckets(),n=b.length,w=$("cw"),W=600,H=230;
 document.querySelectorAll("#rgs .chip").forEach(c=>c.onclick=()=>{range=+c.dataset.r;document.querySelectorAll("#rgs .chip").forEach(x=>x.classList.toggle("on",x===c));chart()});
 /* ---- lists ---- */
 function render(){
- const mine=posts;cnt($("s1"),mine.filter(p=>p.youtube&&!p.youtube.isShort).length);cnt($("s2"),mine.filter(p=>p.youtube&&p.youtube.isShort).length);
+ const cid=curCh(),mine=posts.filter(p=>cid.def?(p.channelId==='mvbd'||!p.channelId||p.authorId===ME):(p.channelId===cid.id||p.authorId===cid.id));cnt($("s1"),mine.filter(p=>p.youtube&&!p.youtube.isShort).length);cnt($("s2"),mine.filter(p=>p.youtube&&p.youtube.isShort).length);
  cnt($("s3"),mine.reduce((a,p)=>a+rc(p),0));cnt($("s4"),mine.reduce((a,p)=>a+(p.comments||[]).length,0));
  chart();
  const words=$("sq").value.toLowerCase().split(/\s+/).filter(Boolean);
  const shown=words.length?mine.filter(p=>{const h=((p.caption||"")+" "+((p.youtube&&p.youtube.title)||"")+" "+(p.authorName||"")).toLowerCase();return words.every(w=>h.includes(w))}):mine;
  $("pc").textContent=words.length?shown.length+"/"+mine.length+" টা":mine.length+" টা";
  const pl=$("pl");pl.innerHTML=shown.length?"":'<div class="empty">'+(words.length?"কিছু পাওয়া যায়নি":"এখনো কিছু upload করা হয়নি")+'</div>';
- (words.length?shown:shown.slice(0,25)).forEach((p,i)=>{const e=document.createElement("div");e.className="it";e.style.setProperty("--i",i);
+ (words.length?shown:shown.slice(0,showN)).forEach((p,i)=>{const e=document.createElement("div");e.className="it";e.style.setProperty("--i",i);
   e.innerHTML=`<img class="th" src="${p.youtube?"https://i.ytimg.com/vi/"+esc(p.youtube.videoId)+"/default.jpg":esc(p.image||"")}" alt=""><div class="tx"><b>${hl(p.caption||"(Title নেই)",words)}</b><small>${p.youtube?(p.youtube.isShort?"Short":"Video"):"ছবি"}${p.authorName&&p.authorName!==NAME?" • "+esc(p.authorName):""} • ${ago(p.createdAt)}</small><div class="ch2"><button class="chip" data-a="r">❤️ ${rc(p)}</button><button class="chip" data-a="c">💬 ${(p.comments||[]).length}</button><button class="chip d" data-a="d">মুছুন</button></div></div>`;
   e.querySelector('[data-a=r]').onclick=()=>openM(p.id,"r");e.querySelector('[data-a=c]').onclick=()=>openM(p.id,"c");
   e.querySelector('[data-a=d]').onclick=async()=>{if(!confirm("এটা মুছে ফেলবে?"))return;try{e.classList.add("out");await deleteDoc(doc(db,"posts",p.id))}catch(x){e.classList.remove("out");toast("মোছা যায়নি")}};pl.appendChild(e)});
+ if(!words.length&&shown.length>showN){const mb2=document.createElement("button");mb2.className="chip";mb2.style.cssText="display:block;margin:12px auto 0";mb2.textContent="আরো দেখাও ("+(shown.length-showN)+" টা বাকি)";mb2.onclick=()=>{showN+=25;render()};pl.appendChild(mb2)}
  const all=[];mine.forEach(p=>(p.comments||[]).forEach(c=>{if(c.uid!==ME&&c.uid!==p.authorId)all.push({c,p})}));all.sort((a,b)=>(b.c.at||0)-(a.c.at||0));
  const cl=$("cl");cl.innerHTML=all.length?"":'<div class="empty">এখনো কেউ comment করেনি</div>';
  all.slice(0,8).forEach(({c,p},i)=>{const e=document.createElement("div");e.className="it";e.style.setProperty("--i",i);
@@ -421,8 +422,14 @@ async function drawM(){const p=posts.find(x=>x.id===cur);if(!p){closeM();return}
   await setDoc(doc(db,"channels",c.id),{name:c.name,avatar:c.avatar,username:un,createdBy:ME,createdAt:serverTimestamp()});
   try{await setDoc(doc(db,"users",c.id),{name:c.name,fullName:c.name,displayName:c.name,username:un,photoURL:c.avatar,avatar:c.avatar,verified:true,isChannel:true,createdBy:ME,createdAt:serverTimestamp()})}catch(e){}}
   localStorage.removeItem("mvbd_channels")}}catch(e){}
- onSnapshot(query(collection(db,"posts"),orderBy("createdAt","desc"),limit(120)),s=>{posts=[];s.forEach(d=>{const x=d.data();if(((x.type==="youtube"&&x.youtube)||(x.type==="image"&&x.image))&&(x.authorId===ME||x.adminId===ME))posts.push({id:d.id,...x})});render()},
-  ()=>{$("pl").innerHTML='<div class="empty">ডেটা আনা যায়নি (Firestore rules দেখো)</div>'})})();
+ const PM={A:new Map(),B:new Map()};
+ const merge=()=>{const m=new Map([...PM.A,...PM.B]);posts=[...m.values()].filter(x=>(x.type==="youtube"&&x.youtube)||(x.type==="image"&&x.image));
+  posts.sort((a,b)=>((b.createdAt&&b.createdAt.seconds)||9e9)-((a.createdAt&&a.createdAt.seconds)||9e9));ready=true;render()};
+ const feed=(key,q)=>onSnapshot(q,s=>{PM[key]=new Map();s.forEach(d=>PM[key].set(d.id,{id:d.id,...d.data()}));merge()},
+  ()=>{$("pl").innerHTML='<div class="empty">ডেটা আনা যায়নি (Firestore rules দেখো)</div>'});
+ feed("A",query(collection(db,"posts"),where("adminId","==",ME)));
+ feed("B",query(collection(db,"posts"),where("authorId","==",ME)));
+})();
 </script>
 </body>
 </html>
